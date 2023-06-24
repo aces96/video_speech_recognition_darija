@@ -1,19 +1,30 @@
 import fs from "fs"
 import ytdl from "ytdl-core"
-import {convert} from "video-to-audio"
-import path from "path";
+import lame from 'node-lame'
+
+// const downloader = new Downloader({
+//     getTags: true,
+//   });
 
 export async function POST(request){
 
+    const startTime = 0;  // Replace with the start time in seconds
+    const duration = 15;   // Replace with the desired duration in seconds
+    const outputStream = fs.createWriteStream('output.mp3');
+
+
+
+
+
     const body = await request.json()
         try {
-            ytdl(body.url)
-            .pipe(fs.createWriteStream('video.mp4'))
-            const video =   fs.readFileSync('video.mp4')
-            console.log('yyoooow', video)
-            let convertedAudioDataObj = await convert(video, "mp3")
-            console.log('yyoooow2', convertedAudioDataObj)
-            const res = {message: 'done', video: video}
+            const audio = ytdl(body.url,{filter: 'audioonly', format: "mp3"})
+            audio.pipe(fs.createWriteStream('audio.mp3'))
+            
+
+            console.log('yeah', audio);
+            
+            const res = {message: 'done'}
             const myOptions = { status: 200};
             return new Response(JSON.stringify(res), myOptions)
         } catch (error) {
